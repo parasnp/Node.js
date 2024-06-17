@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Chat App</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Your CSS styles */
+    </style>
+</head>
+<body>
+    <div id="chat">
+        <form id="form" action="">
+            <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+    </div>
+    <div id="users">
+        <h3>Online Users:</h3>
+        <ul id="online-users"></ul>
+    </div>
+    <script>
+        var socket = io();
+
+        var username = prompt("Enter your name:");
+        socket.emit('join', username);
+
+        $('form').submit(function(){
+            socket.emit('chat message', $('#input').val());
+            $('#input').val('');
+            return false;
+        });
+
+        socket.on('update users', function(users){
+            $('#online-users').empty();
+            users.forEach(function(user){
+                $('#online-users').append($('<li>').text(user));
+            });
+        });
+
+        socket.on('user joined', function(username){
+            console.log(`${username} joined the chat`);
+        });
+
+        socket.on('user left', function(username){
+            console.log(`${username} left the chat`);
+        });
+    </script>
+</body>
+</html>
